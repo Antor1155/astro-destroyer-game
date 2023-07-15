@@ -39,7 +39,7 @@ window.addEventListener("load", function(){
             this.angle += this.va
             if(!this.free){
                 this.y += this.speed
-                if(this.x > this.game.width + this.radius){
+                if(this.y > this.game.height + this.radius){
                     this.reset()
                 }
             }
@@ -51,6 +51,19 @@ window.addEventListener("load", function(){
             this.free = false
             this.x = Math.random() * this.game.width
             this.y = -this.radius
+        }
+    }
+
+    class Explosion{
+        constructor(game, x, y){
+            this.game = game
+            this.x = x
+            this.y = y
+            this.image()
+        }
+
+        draw(){
+            
         }
     }
 
