@@ -42,11 +42,23 @@ window.addEventListener("load", function(){
                 if(this.y > this.game.height + this.radius){
                     this.reset()
                 }
+
+                // check collision 
+
+                if (this.y > 600){
+                    this.game.explosion.push(new Explosion(this.game, this.x, this.y))
+                    this.reset()
+                }
+
+
             }
+
         }
+
         reset(){
             this.free = true 
         }
+
         start(){
             this.free = false
             this.x = Math.random() * this.game.width
@@ -59,11 +71,48 @@ window.addEventListener("load", function(){
             this.game = game
             this.x = x
             this.y = y
-            this.image()
+
+            this.image = document.getElementById("explosions")
+            this.spriteWidth = 256
+            this.spriteHeight = 256
+            this.spriteX = 0
+            this.spriteY = 0
+            this.frameX = this.x - this.spriteWidth * 0.5
+            this.frameY = this.y - this.spriteHeight * 0.5
+
+            this.timer = 0
+            this.frame = 48
+            this.interval = 1000/ this.frame
+
+            this.finished = false
+
         }
 
-        draw(){
-            
+        draw(context){
+            if (this.game.degub){
+                context.beginPath()
+                context.arc(this.x, this.y, 100, 0, Math.PI * 2)
+                context.fill()
+            }
+
+            context.drawImage(this.image, this.spriteX * this.spriteWidth, this.spriteY * this.spriteWidth, this.spriteWidth, this.spriteHeight, this.frameX, this.frameY, this.spriteWidth, this.spriteHeight)
+        }
+        
+        update(deltaTime){
+            if (this.timer > this.interval){
+                if (this.spriteX < 7){
+                    this.spriteX ++
+                } else if (this.spriteY < 5) {
+                    this.spriteY ++
+                    this.spriteX = 0 
+                } else{
+                    this.finished = true
+                    this.game.explosion = this.game.explosion.filter(exp => !exp.finished)
+                }
+                this.timer = 0
+            } else {
+                this.timer += deltaTime
+            }
         }
     }
 
@@ -76,6 +125,9 @@ window.addEventListener("load", function(){
             this.asteroidTimer = 0
             this.asteroidInterval = 1000
 
+            this.debug = false
+
+            this.explosion = []
             this.createAsteroidPool()
         }
 
@@ -109,6 +161,13 @@ window.addEventListener("load", function(){
                asteroid.draw(context)
                asteroid.update()
            })
+
+           this.explosion.forEach(explosion =>{
+                explosion.draw(context)
+                explosion.update(deltaTime)
+           })
+
+           console.log(this.explosion)
         }
     }
 
