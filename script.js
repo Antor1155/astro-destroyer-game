@@ -8,6 +8,36 @@ window.addEventListener("load", function () {
     ctx.lineWidth = 3
     ctx.font = "40px 'VT323'"
 
+    // handle mobile display and desktop display
+    const innerHeight = window.innerHeight
+    const innerWidth = window.innerWidth
+
+    if (innerHeight > innerWidth){
+        // in portrait scale with width ratio 
+        const difference = innerWidth - canvas.width
+        const newWidth = canvas.width + difference
+        let ratio = (newWidth / canvas.width).toFixed(2)
+
+        // when width is okay but height is more than display 
+        while((canvas.height * ratio) > innerHeight){
+            console.log(ratio) 
+            ratio -= 0.01
+            console.log(ratio) 
+        }
+
+        canvas.style.transform = `translate(-50%, -50%) scale(${ratio})`
+
+    } else{
+        // in landscape, scale with height ratio 
+        const difference = innerHeight - canvas.height
+        const newHeight = canvas.height + difference
+        const ratio = (newHeight / canvas.height).toFixed(2)
+
+        canvas.style.transform = `translate(-50%, -50%) scale(${ratio})`
+    }
+    
+    canvas.style.display = "block"
+
     class Player{
         constructor(game){
             this.game = game
@@ -278,7 +308,7 @@ window.addEventListener("load", function () {
 
             this.score = 0
             this.damage = 0
-            this.winningScore = 1
+            this.winningScore = 30
             this.loosingScore = 5
             this.gameFinished = false
 
