@@ -10,3 +10,10 @@
 #asteroid, #explosions, #smoke, #earth{
     display: none;
 }
+
+#restart{
+    font-size: 30px;
+    position: relative;
+    top:  500px;
+    right: 0px;
+}

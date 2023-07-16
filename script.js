@@ -1,7 +1,7 @@
 window.addEventListener("load", function () {
     const canvas = document.getElementById("canvas1")
     const ctx = canvas.getContext("2d")
-    canvas.width = 600
+    canvas.width = 400
     canvas.height = 800
 
     ctx.strokeStyle = "white"
@@ -12,10 +12,10 @@ window.addEventListener("load", function () {
             this.game = game
             this.x = this.game.width * 0.5
             this.y = this.game.height * 0.5
-            this.radius = 30
+            this.radius = 15
 
             this.timer = 0
-            this.interval = 200
+            this.interval = 100
 
             this.game.canvas.addEventListener("mousedown", e =>{
                this.x = e.offsetX
@@ -65,16 +65,17 @@ window.addEventListener("load", function () {
 
         draw(context) {
             context.save()
+            
             context.translate(this.x, this.y)
             context.rotate(this.angle)
 
             context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.width, this.height)
             context.restore()
-            // if(this.game.debug){
+            if(this.game.debug){
             context.beginPath()
             context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
             context.stroke()
-            // }
+            }
         }
 
         update() {
@@ -86,12 +87,14 @@ window.addEventListener("load", function () {
     class Asteroid {
         constructor(game) {
             this.game = game
-            this.radius = 75
             this.x = Math.random() * this.game.width
             this.y = -this.radius
             this.image = document.getElementById("asteroid")
-            this.spriteWidth = 150
-            this.spriteHeight = 155
+            this.offsetSize = -50
+            this.radius = 75 + this.offsetSize / 2
+            this.spriteWidth = 150 + this.offsetSize
+            this.spriteHeight = 155 + this.offsetSize
+            
             this.speed = Math.random() * 1.4 + 0.1
             this.free = true
             this.angle = 0
@@ -109,7 +112,7 @@ window.addEventListener("load", function () {
                 context.translate(this.x, this.y)
                 context.rotate(this.angle)
 
-                context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.spriteWidth, this.spriteHeight)
+                context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.spriteWidth, this.spriteHeight )
                 context.restore()
             }
         }
@@ -122,21 +125,21 @@ window.addEventListener("load", function () {
                 }
 
                 // check collision with player
-                // if (this.y > 300) {
-                //     this.blast()
-                // }
+                if(this.game.checkCollision(this.game.player, this)){
+                    this.smoke()
+                    if(!this.game.gameFinished) this.game.score++
+                }
 
                 // check collision with earch
-                let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, this.game.earth)
-
-                if (collision) {
+                if (this.game.checkCollision(this, this.game.earth)) {
                     this.blast()
+                    if(!this.game.gameFinished) this.game.damage++
                 }
             }
         }
 
         blast() {
-            this.game.explosion.push(new Explosion(this.game, this.x, this.y + 50))
+            this.game.explosion.push(new Explosion(this.game, this.x, this.y + this.radius / 2))
             // added offset here as fire only works in earth
             this.reset()
         }
@@ -266,14 +269,29 @@ window.addEventListener("load", function () {
             this.asteroidTimer = 0
             this.asteroidInterval = 1000
 
-            this.earth = new Earth(this, this.width * 0.5, this.height + 200)
+            this.earth = new Earth(this, this.width * 0.5, this.height + 250)
 
             this.player = new Player(this)
 
-            this.debug = true
+            this.debug = false
+
+            this.score = 0
+            this.damage = 0
+            this.winningScore = 2
+            this.loosingScore = 2
+            this.gameFinished = false
 
             this.explosion = [new Smoke(this, 300, 400)]
             this.createAsteroidPool()
+
+            window.addEventListener("keypress", e =>{
+                console.log(e.key.toLowerCase())
+                if (e.key.toLowerCase() === "d"){
+                    this.debug = !this.debug
+                }
+            })
+
+            
         }
 
         createAsteroidPool() {
@@ -297,7 +315,17 @@ window.addEventListener("load", function () {
             const distance = Math.hypot(dy, dx)
             const sumOfRadii = a.radius + b.radius
 
-            return [(distance < sumOfRadii), distance, sumOfRadii, dx, dy]
+            return (distance < sumOfRadii)
+        }
+
+        scoreBoard(context){
+            context.save()
+            context.fillStyle = "White"
+            context.font = "30px sans-serif"
+            context.fillText("Score: " + this.score , 10, 50)
+            context.fillStyle = "red"
+            context.fillText("Damage: " + this.damage , 230, 50)
+            context.restore()
         }
 
         render(context, deltaTime) {
@@ -319,12 +347,26 @@ window.addEventListener("load", function () {
                 obj.update(deltaTime)
             })
 
+            this.scoreBoard(context)
 
+            if(this.score >= this.winningScore || this.damage >= this.loosingScore){
+                this.gameFinished = true
+            }
+        }
 
+        reset(){
+            this.score = 0
+            this.damage = 0
+            this.asteroidPool = []
+            this.createAsteroidPool()
+            this.explosion = []
+            game.gameFinished = false
         }
     }
 
     const game = new Game(canvas)
+
+    const restartBtn = this.document.getElementById("restart")
 
     let lastTime = 0
     function animation(timeStamp) {
@@ -332,8 +374,23 @@ window.addEventListener("load", function () {
         lastTime = timeStamp
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         game.render(ctx, deltaTime)
-        requestAnimationFrame(animation)
+
+        if (!game.gameFinished) {
+            requestAnimationFrame(animation)
+        } else {
+            
+            handleScore(game.score, game.damage)
+            game.reset()
+        }
     }
 
     animation(0)
+
+    restartBtn.addEventListener("click", () =>{
+        animation(lastTime)
+    })
+
+    function handleScore(score, damage){
+        console.log(score, damage)
+    }
 })
