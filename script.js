@@ -12,7 +12,7 @@ window.addEventListener("load", function () {
             this.game = game
             this.x = x
             this.y = y
-            this.radius = 440
+            this.radius = 410
 
             this.image = document.getElementById("earth")
             this.spriteWidth = 1000
@@ -79,16 +79,27 @@ window.addEventListener("load", function () {
                 }
 
                 // check collision with player
-                if (this.y > 300) {
+                // if (this.y > 300) {
+                //     this.blast()
+                // }
+
+                // check collision with earch
+                let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, this.game.earth)
+
+                if(collision){
                     this.blast()
                 }
-
-                
             }
         }
 
         blast() {
-            this.game.explosion.push(new Explosion(this.game, this.x, this.y))
+            this.game.explosion.push(new Explosion(this.game, this.x, this.y + 50))
+            // added offset here as fire only works in earth
+            this.reset()
+        }
+
+        smoke(){
+            this.game.explosion.push(new Smoke(this.game, this.x, this.y))
             this.reset()
         }
 
@@ -235,7 +246,7 @@ window.addEventListener("load", function () {
 
         checkCollision(a, b){
             const dx = a.x - b.x
-            const dy = a.y = b.y
+            const dy = a.y - b.y
 
             const distance = Math.hypot(dy, dx)
             const sumOfRadii = a.radius + b.radius
