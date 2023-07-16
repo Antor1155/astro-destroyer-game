@@ -7,6 +7,46 @@ window.addEventListener("load", function () {
     ctx.strokeStyle = "white"
     ctx.lineWidth = 3
 
+    class Player{
+        constructor(game){
+            this.game = game
+            this.x = this.game.width * 0.5
+            this.y = this.game.height * 0.5
+            this.radius = 30
+
+            this.timer = 0
+            this.interval = 200
+
+            this.game.canvas.addEventListener("mousedown", e =>{
+               this.x = e.offsetX
+               this.y = e.offsetY
+            })
+        }
+
+        draw(context){
+            if (this.game.debug){
+                context.save()
+                context.beginPath()
+                context.arc(this.x, this.y, this.radius, 0, Math.PI* 2)
+                context.fillStyle = "red"
+                context.fill()
+                context.restore()
+            }
+        }
+
+        update(deltaTime){
+            if (this.timer > this.interval){
+                this.x = this.game.width * 0.5
+                this.y = this.game.height
+
+                this.timer = 0
+            } else {
+                this.timer += deltaTime
+            }
+
+        }
+    }
+
     class Earth {
         constructor(game, x, y) {
             this.game = game
@@ -217,15 +257,18 @@ window.addEventListener("load", function () {
 
 
     class Game {
-        constructor(width, height) {
-            this.width = width
-            this.height = height
+        constructor(canvas) {
+            this.canvas = canvas
+            this.width = canvas.width
+            this.height = canvas.height
             this.asteroidPool = []
             this.max = 30
             this.asteroidTimer = 0
             this.asteroidInterval = 1000
 
             this.earth = new Earth(this, this.width * 0.5, this.height + 200)
+
+            this.player = new Player(this)
 
             this.debug = true
 
@@ -269,7 +312,7 @@ window.addEventListener("load", function () {
                 this.asteroidTimer += deltaTime
             }
 
-            const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion]
+            const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion, this.player]
 
             allObjects.forEach(obj => {
                 obj.draw(context)
@@ -281,7 +324,7 @@ window.addEventListener("load", function () {
         }
     }
 
-    const game = new Game(canvas.width, canvas.height)
+    const game = new Game(canvas)
 
     let lastTime = 0
     function animation(timeStamp) {
