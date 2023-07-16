@@ -7,6 +7,6 @@
     transform: translate(-50%, -50%)
 }
 
-#asteroid, #explosions{
+#asteroid, #explosions, #smoke, #earth{
     display: none;
 }
