@@ -59,9 +59,12 @@ window.addEventListener("load", function () {
         }
         draw(context) {
             if (!this.free) {
-                // context.beginPath()
-                // context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-                // context.stroke()
+                if (this.game.debug) {
+                    context.beginPath()
+                    context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+                    context.stroke()
+                }
+
                 context.save()
                 context.translate(this.x, this.y)
                 context.rotate(this.angle)
@@ -86,7 +89,7 @@ window.addEventListener("load", function () {
                 // check collision with earch
                 let [collision, distance, sumOfRadii, dx, dy] = this.game.checkCollision(this, this.game.earth)
 
-                if(collision){
+                if (collision) {
                     this.blast()
                 }
             }
@@ -98,7 +101,7 @@ window.addEventListener("load", function () {
             this.reset()
         }
 
-        smoke(){
+        smoke() {
             this.game.explosion.push(new Smoke(this.game, this.x, this.y))
             this.reset()
         }
@@ -185,7 +188,7 @@ window.addEventListener("load", function () {
         }
 
         draw(context) {
-            if (this.game.degub) {
+            if (this.game.debug) {
                 context.beginPath()
                 context.arc(this.x, this.y, 100, 0, Math.PI * 2)
                 context.fill()
@@ -224,7 +227,7 @@ window.addEventListener("load", function () {
 
             this.earth = new Earth(this, this.width * 0.5, this.height + 200)
 
-            this.debug = false
+            this.debug = true
 
             this.explosion = [new Smoke(this, 300, 400)]
             this.createAsteroidPool()
@@ -244,7 +247,7 @@ window.addEventListener("load", function () {
             }
         }
 
-        checkCollision(a, b){
+        checkCollision(a, b) {
             const dx = a.x - b.x
             const dy = a.y - b.y
 
@@ -266,13 +269,13 @@ window.addEventListener("load", function () {
                 this.asteroidTimer += deltaTime
             }
 
-            const allObjects = [ this.earth, ...this.asteroidPool, ...this.explosion]
+            const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion]
 
             allObjects.forEach(obj => {
                 obj.draw(context)
                 obj.update(deltaTime)
             })
-           
+
 
 
         }
