@@ -20,9 +20,7 @@ window.addEventListener("load", function () {
 
         // when width is okay but height is more than display 
         while((canvas.height * ratio) > innerHeight){
-            console.log(ratio) 
             ratio -= 0.01
-            console.log(ratio) 
         }
 
         canvas.style.transform = `translate(-50%, -50%) scale(${ratio})`
