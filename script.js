@@ -316,7 +316,6 @@ window.addEventListener("load", function () {
             this.createAsteroidPool()
 
             window.addEventListener("keypress", e =>{
-                console.log(e.key.toLowerCase())
                 if (e.key.toLowerCase() === "d"){
                     this.debug = !this.debug
                 }
