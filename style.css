@@ -1,3 +1,13 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'VT323', monospace;
+}
+
 #canvas1 {
     border: 1px solid black;
     background: url('images/bg1.png');
@@ -11,9 +21,42 @@
     display: none;
 }
 
-#restart{
-    font-size: 30px;
+#instruction {
     position: relative;
-    top:  500px;
-    right: 0px;
+    z-index: 2;
+    background-color: rgba(14, 11, 11, 0.445);
+    color: white;
+    text-align: center;
+    height: 100vh;
+    width: 100vw;
+
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 1.5rem;
+}
+
+#title{
+    color: red;
+    font-size: 4rem;
+}
+
+#start{
+    display: block;
+    position: relative;
+    top: 0;
+    font-size: 30px;
+    width: 100px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgb(27, 170, 195);
+
+    transition: .5s ;
+}
+
+#start:hover, #start:focus{
+    top: 4px;
+    box-shadow: 0 1px 1px rgb(27, 170, 195);
 }

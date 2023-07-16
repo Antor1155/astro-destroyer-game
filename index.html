@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astro distroyer by 'Md Antor'</title>
+    <title>Meteor Mayhem by 'Md Antor'</title>
     <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
     <canvas id="canvas1"></canvas>
@@ -13,8 +17,25 @@
     <img id="smoke" src="images/smoke.png" alt="smoke">
     <img id="earth" src="images/roundCity.png" alt="earth">
 
+    <div id="instruction">
+        <div>
+            <h1>Meteor Mayhem</h1>
+            <br>
+            <h3 id="title"></h3>
+        </div>
+        <div>
+            <br>
+            <p>Your one click will <br>Damage the Asteroid</p>
+            <br>
+            <p>If 5 asteroid hits earth, you loose</p>
+            <br>
+            <p>Destroy 30 asteroid to be the hero for today</p>
+            <br>
+            <small>press "d" for developer mood toggle</small>
+        </div>
 
-    <button id="restart">restart</button>
+        <button id="start">start</button>
+    </div>
 
     <script src="script.js"></script>
 </body>

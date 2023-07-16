@@ -6,6 +6,7 @@ window.addEventListener("load", function () {
 
     ctx.strokeStyle = "white"
     ctx.lineWidth = 3
+    ctx.font = "40px 'VT323'"
 
     class Player{
         constructor(game){
@@ -277,8 +278,8 @@ window.addEventListener("load", function () {
 
             this.score = 0
             this.damage = 0
-            this.winningScore = 2
-            this.loosingScore = 2
+            this.winningScore = 1
+            this.loosingScore = 5
             this.gameFinished = false
 
             this.explosion = [new Smoke(this, 300, 400)]
@@ -321,7 +322,6 @@ window.addEventListener("load", function () {
         scoreBoard(context){
             context.save()
             context.fillStyle = "White"
-            context.font = "30px sans-serif"
             context.fillText("Score: " + this.score , 10, 50)
             context.fillStyle = "red"
             context.fillText("Damage: " + this.damage , 230, 50)
@@ -366,10 +366,14 @@ window.addEventListener("load", function () {
 
     const game = new Game(canvas)
 
-    const restartBtn = this.document.getElementById("restart")
+    const startBtn = this.document.getElementById("start")
+    const instruction = this.document.getElementById("instruction")
+    const title = this.document.getElementById("title")
 
     let lastTime = 0
     function animation(timeStamp) {
+        instruction.style.display = "none"
+
         const deltaTime = timeStamp - lastTime
         lastTime = timeStamp
         ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -378,19 +382,21 @@ window.addEventListener("load", function () {
         if (!game.gameFinished) {
             requestAnimationFrame(animation)
         } else {
-            
-            handleScore(game.score, game.damage)
+            handleGameOver(game.score < game.winningScore)
             game.reset()
         }
     }
 
-    animation(0)
-
-    restartBtn.addEventListener("click", () =>{
+    startBtn.addEventListener("click", () =>{
         animation(lastTime)
     })
 
-    function handleScore(score, damage){
-        console.log(score, damage)
+    function handleGameOver(loose){
+        instruction.style.display = "flex"
+        if(loose){
+            title.innerText = "Looser ??"
+        } else{
+            title.innerText = "Hero !!"
+        }
     }
 })
