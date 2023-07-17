@@ -399,8 +399,6 @@ window.addEventListener("load", function () {
 
     let lastTime = 0
     function animation(timeStamp) {
-        instruction.style.display = "none"
-
         const deltaTime = timeStamp - lastTime
         lastTime = timeStamp
         ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -414,7 +412,10 @@ window.addEventListener("load", function () {
         }
     }
 
+    instruction.style.height = `${innerHeight}px`
+
     startBtn.addEventListener("click", () =>{
+        instruction.style.display = "none"
         animation(lastTime)
     })
 
