@@ -27,7 +27,7 @@ window.addEventListener("load", function () {
 
     } else {
         // in landscape, scale with height ratio 
-        const difference = innerHeight - canvas.height
+        const difference = innerHeight - canvas.height -10
         const newHeight = canvas.height + difference
         const ratio = (newHeight / canvas.height).toFixed(2)
 
@@ -387,12 +387,12 @@ window.addEventListener("load", function () {
             this.rocket = new Rocket(this)
             this.bullets = []
 
-            this.debug = true
+            this.debug = false
 
             this.score = 0
             this.damage = 0
-            this.winningScore = 300
-            this.loosingScore = 500
+            this.winningScore = 30
+            this.loosingScore = 5
             this.gameFinished = false
 
             this.explosion = [new Smoke(this, 300, 400)]
@@ -505,9 +505,9 @@ window.addEventListener("load", function () {
         animation(lastTime)
     })
 
-    //under construction 
-    instruction.style.display = "none"
-    animation(lastTime)
+    //under construction or when mentaining the code
+    // instruction.style.display = "none"
+    // animation(lastTime)
 
     function handleGameOver(loose) {
         instruction.style.display = "flex"

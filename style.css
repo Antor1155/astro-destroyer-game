@@ -24,6 +24,10 @@ body{
     display: none;
 }
 
+#ship{
+    width: 70px;
+}
+
 #instruction {
     position: relative;
     z-index: 2;
