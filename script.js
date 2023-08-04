@@ -70,7 +70,7 @@ window.addEventListener("load", function () {
 
         draw(context) {
             context.save()
-            context.drawImage(this.image, this.x-this.width * 0.5, this.y, this.width, this.height)
+            context.drawImage(this.image, this.x-this.width * 0.5, this.y-this.height * 0.5, this.width, this.height)
 
             if(this.game.debug){
             context.beginPath()
@@ -88,53 +88,48 @@ window.addEventListener("load", function () {
                 this.scaler  = -(this.scaler)
                 this.timer = 0
 
+                this.game.bullets.push(new Bullet(this.game, this.x, this.y))
+
             } else {
                 this.width += this.scaler
                 this.height += this.scaler
                 this.timer += deltaTime
-                console.log(this.timer)
             }
 
         }
     }
 
     class Bullet{
-        constructor(game){
+        constructor(game, x, y){
             this.game = game
-            this.x = this.game.width * 0.5
-            this.y = this.game.height * 0.5
-            this.radius = 15
+            this.x = x
+            this.y = y
+            this.radius = 7
 
-            this.timer = 0
-            this.interval = 100
+            this.scaler = 1
 
-            this.game.canvas.addEventListener("mousedown", e =>{
-               this.x = e.offsetX
-               this.y = e.offsetY
-            })
+            this.active = true
         }
 
         draw(context){
-            if (this.game.debug){
                 context.save()
                 context.beginPath()
                 context.arc(this.x, this.y, this.radius, 0, Math.PI* 2)
-                context.fillStyle = "red"
+                context.stroke()
+                context.fillStyle = "rgb(250, 104, 75)"
                 context.fill()
                 context.restore()
-            }
         }
 
         update(deltaTime){
-            if (this.timer > this.interval){
-                this.x = this.game.width * 0.5
-                this.y = this.game.height
+            this.y -= this.scaler
 
-                this.timer = 0
-            } else {
-                this.timer += deltaTime
+            if((this.y + this.radius) < 0){
+                this.active = false
+                this.game.bullets = this.game.bullets.filter(bullet => bullet.active)
+
+                console.log(this.game.bullets)
             }
-
         }
     }
 
@@ -216,10 +211,13 @@ window.addEventListener("load", function () {
                 }
 
                 // check collision with bullet
-                if(this.game.checkCollision(this.game.bullet, this)){
-                    this.smoke()
-                    if(!this.game.gameFinished) this.game.score++
-                }
+                this.game.bullets.forEach((bullet)=>{
+                    if(this.game.checkCollision(bullet, this)){
+                        this.smoke()
+                        if(!this.game.gameFinished) this.game.score++
+                    }
+                })
+                
 
                 // check collision with earch
                 if (this.game.checkCollision(this, this.game.earth)) {
@@ -362,14 +360,14 @@ window.addEventListener("load", function () {
 
             this.earth = new Earth(this, this.width * 0.5, this.height + 250)
 
-            this.bullet = new Bullet(this)
             this.rocket = new Rocket(this)
+            this.bullets = []
 
-            this.debug = false
+            this.debug = true
 
             this.score = 0
             this.damage = 0
-            this.winningScore = 30
+            this.winningScore = 300
             this.loosingScore = 500
             this.gameFinished = false
 
@@ -430,7 +428,7 @@ window.addEventListener("load", function () {
                 this.asteroidTimer += deltaTime
             }
 
-            const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion, this.bullet, this.rocket]
+            const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion, ...this.bullets, this.rocket]
 
             allObjects.forEach(obj => {
                 obj.draw(context)
