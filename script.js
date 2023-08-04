@@ -12,20 +12,20 @@ window.addEventListener("load", function () {
     const innerHeight = window.innerHeight
     const innerWidth = window.innerWidth
 
-    if (innerHeight > innerWidth){
+    if (innerHeight > innerWidth) {
         // in portrait scale with width ratio 
         const difference = innerWidth - canvas.width
         const newWidth = canvas.width + difference
         let ratio = (newWidth / canvas.width).toFixed(2)
 
         // when width is okay but height is more than display 
-        while((canvas.height * ratio) > innerHeight){
+        while ((canvas.height * ratio) > innerHeight) {
             ratio -= 0.01
         }
 
         canvas.style.transform = `translate(-50%, -50%) scale(${ratio})`
 
-    } else{
+    } else {
         // in landscape, scale with height ratio 
         const difference = innerHeight - canvas.height
         const newHeight = canvas.height + difference
@@ -33,14 +33,14 @@ window.addEventListener("load", function () {
 
         canvas.style.transform = `translate(-50%, -50%) scale(${ratio})`
     }
-    
+
     canvas.style.display = "block"
-    
-    class Rocket{
-        constructor(game){
+
+    class Rocket {
+        constructor(game) {
             this.game = game
             this.x = this.game.width * 0.5
-            this.y = this.game.height * 0.5
+            this.y = 700
             this.image = document.getElementById("rocket")
             this.width = 150
             this.height = 150
@@ -52,43 +52,50 @@ window.addEventListener("load", function () {
 
             this.scaler = .5
 
-            this.game.canvas.addEventListener("mousedown", (e)=>{
+            this.game.canvas.addEventListener("mousedown", (e) => {
                 this.moveable = true
                 this.x = e.offsetX
-                this.y = e.offsetY
+
+                if(e.offsetY > this.game.canvas.height -200){
+                    this.y = e.offsetY
+                }
+
             })
-            this.game.canvas.addEventListener("mouseup", ()=>{
+            this.game.canvas.addEventListener("mouseup", () => {
                 this.moveable = false
             })
-            this.game.canvas.addEventListener('mousemove', e =>{
-                if(this.moveable){
+            this.game.canvas.addEventListener('mousemove', e => {
+                if (this.moveable) {
                     this.x = e.offsetX
+
+                    if(e.offsetY > this.game.canvas.height -200){
                     this.y = e.offsetY
+                }
                 }
             })
         }
 
         draw(context) {
             context.save()
-            context.drawImage(this.image, this.x-this.width * 0.5, this.y-this.height * 0.5, this.width, this.height)
+            context.drawImage(this.image, this.x - this.width * 0.5, this.y - this.height * 0.5, this.width, this.height)
 
-            if(this.game.debug){
-            context.beginPath()
-            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-            context.stroke()
-            context.fillStyle = "blue"
-            context.fill()
+            if (this.game.debug) {
+                context.beginPath()
+                context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+                context.stroke()
+                context.fillStyle = "blue"
+                context.fill()
             }
 
             context.restore()
         }
 
-        update(deltaTime){
-            if (this.timer > this.interval){
-                this.scaler  = -(this.scaler)
+        update(deltaTime) {
+            if (this.timer > this.interval) {
+                this.scaler = -(this.scaler)
                 this.timer = 0
 
-                this.game.bullets.push(new Bullet(this.game, this.x, this.y))
+                this.game.bullets.push(new Bullet(this.game, this.x, this.y - this.height * 0.5))
 
             } else {
                 this.width += this.scaler
@@ -99,36 +106,50 @@ window.addEventListener("load", function () {
         }
     }
 
-    class Bullet{
-        constructor(game, x, y){
+    class Bullet {
+        constructor(game, x, y) {
             this.game = game
             this.x = x
             this.y = y
+            this.width = 50
+            this.height = 50
             this.radius = 7
-
             this.scaler = 1
-
             this.active = true
+            this.image = document.getElementById("missile")
+
+            this.interval = 1000
+            this.timer = 0
+            this.direction = Math.random() 
         }
 
-        draw(context){
-                context.save()
+        draw(context) {
+            context.save()
+            if (this.game.debug) {
                 context.beginPath()
-                context.arc(this.x, this.y, this.radius, 0, Math.PI* 2)
+                context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
                 context.stroke()
                 context.fillStyle = "rgb(250, 104, 75)"
                 context.fill()
-                context.restore()
+            }
+
+            context.drawImage(this.image, this.x-this.width * 0.5 , this.y - 10, this.width, this.height )
+            context.restore()
         }
 
-        update(deltaTime){
+        update(deltaTime) {
             this.y -= this.scaler
 
-            if((this.y + this.radius) < 0){
+            if ((this.y + this.radius) < 0) {
                 this.active = false
-                this.game.bullets = this.game.bullets.filter(bullet => bullet.active)
+            }
 
-                console.log(this.game.bullets)
+            if(this.timer > this.interval){
+                this.timer = 0
+                this.direction = -this.direction
+            } else{
+                this.timer += deltaTime
+                this.x += this.direction
             }
         }
     }
@@ -151,16 +172,16 @@ window.addEventListener("load", function () {
 
         draw(context) {
             context.save()
-            
+
             context.translate(this.x, this.y)
             context.rotate(this.angle)
 
             context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.width, this.height)
             context.restore()
-            if(this.game.debug){
-            context.beginPath()
-            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-            context.stroke()
+            if (this.game.debug) {
+                context.beginPath()
+                context.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+                context.stroke()
             }
         }
 
@@ -180,11 +201,13 @@ window.addEventListener("load", function () {
             this.radius = 75 + this.offsetSize / 2
             this.spriteWidth = 150 + this.offsetSize
             this.spriteHeight = 155 + this.offsetSize
-            
+
             this.speed = Math.random() * 1.4 + 0.1
             this.free = true
             this.angle = 0
             this.va = Math.random() * 0.02 - 0.01
+
+
         }
         draw(context) {
             if (!this.free) {
@@ -198,7 +221,7 @@ window.addEventListener("load", function () {
                 context.translate(this.x, this.y)
                 context.rotate(this.angle)
 
-                context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.spriteWidth, this.spriteHeight )
+                context.drawImage(this.image, -this.spriteWidth * 0.5, -this.spriteHeight * 0.5, this.spriteWidth, this.spriteHeight)
                 context.restore()
             }
         }
@@ -211,18 +234,19 @@ window.addEventListener("load", function () {
                 }
 
                 // check collision with bullet
-                this.game.bullets.forEach((bullet)=>{
-                    if(this.game.checkCollision(bullet, this)){
+                this.game.bullets.forEach((bullet) => {
+                    if (this.game.checkCollision(bullet, this)) {
+                        bullet.active = false
                         this.smoke()
-                        if(!this.game.gameFinished) this.game.score++
+                        if (!this.game.gameFinished) this.game.score++
                     }
                 })
-                
+
 
                 // check collision with earch
                 if (this.game.checkCollision(this, this.game.earth)) {
                     this.blast()
-                    if(!this.game.gameFinished) this.game.damage++
+                    if (!this.game.gameFinished) this.game.damage++
                 }
             }
         }
@@ -374,13 +398,13 @@ window.addEventListener("load", function () {
             this.explosion = [new Smoke(this, 300, 400)]
             this.createAsteroidPool()
 
-            window.addEventListener("keypress", e =>{
-                if (e.key.toLowerCase() === "d"){
+            window.addEventListener("keypress", e => {
+                if (e.key.toLowerCase() === "d") {
                     this.debug = !this.debug
                 }
             })
 
-            
+
         }
 
         createAsteroidPool() {
@@ -407,12 +431,12 @@ window.addEventListener("load", function () {
             return (distance < sumOfRadii)
         }
 
-        scoreBoard(context){
+        scoreBoard(context) {
             context.save()
             context.fillStyle = "White"
-            context.fillText("Score: " + this.score , 10, 50)
+            context.fillText("Score: " + this.score, 10, 50)
             context.fillStyle = "red"
-            context.fillText("Damage: " + this.damage , 230, 50)
+            context.fillText("Damage: " + this.damage, 230, 50)
             context.restore()
         }
 
@@ -428,6 +452,7 @@ window.addEventListener("load", function () {
                 this.asteroidTimer += deltaTime
             }
 
+            this.bullets = this.bullets.filter(bullet => bullet.active)
             const allObjects = [this.earth, ...this.asteroidPool, ...this.explosion, ...this.bullets, this.rocket]
 
             allObjects.forEach(obj => {
@@ -437,12 +462,12 @@ window.addEventListener("load", function () {
 
             this.scoreBoard(context)
 
-            if(this.score >= this.winningScore || this.damage >= this.loosingScore){
+            if (this.score >= this.winningScore || this.damage >= this.loosingScore) {
                 this.gameFinished = true
             }
         }
 
-        reset(){
+        reset() {
             this.score = 0
             this.damage = 0
             this.asteroidPool = []
@@ -475,7 +500,7 @@ window.addEventListener("load", function () {
 
     instruction.style.height = `${innerHeight}px`
 
-    startBtn.addEventListener("click", () =>{
+    startBtn.addEventListener("click", () => {
         instruction.style.display = "none"
         animation(lastTime)
     })
@@ -484,11 +509,11 @@ window.addEventListener("load", function () {
     instruction.style.display = "none"
     animation(lastTime)
 
-    function handleGameOver(loose){
+    function handleGameOver(loose) {
         instruction.style.display = "flex"
-        if(loose){
+        if (loose) {
             title.innerText = "Looser ??"
-        } else{
+        } else {
             title.innerText = "Hero !!"
         }
     }

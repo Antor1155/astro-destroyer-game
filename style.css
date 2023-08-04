@@ -20,7 +20,7 @@ body{
     display: none;
 }
 
-#asteroid, #explosions, #smoke, #earth, #rocket{
+#asteroid, #explosions, #smoke, #earth, #rocket, #missile{
     display: none;
 }
 
