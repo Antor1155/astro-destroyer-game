@@ -474,6 +474,7 @@ window.addEventListener("load", function () {
             this.createAsteroidPool()
             this.explosion = []
             game.gameFinished = false
+            this.bullets = []
         }
     }
 

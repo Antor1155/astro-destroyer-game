@@ -18,6 +18,7 @@ body{
     transform: translate(-50%, -50%);
 
     display: none;
+    cursor: all-scroll;
 }
 
 #asteroid, #explosions, #smoke, #earth, #rocket, #missile{
