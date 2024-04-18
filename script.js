@@ -27,7 +27,7 @@ window.addEventListener("load", function () {
 
     } else {
         // in landscape, scale with height ratio 
-        const difference = innerHeight - canvas.height -10
+        const difference = innerHeight - canvas.height - 10
         const newHeight = canvas.height + difference
         const ratio = (newHeight / canvas.height).toFixed(2)
 
@@ -52,27 +52,40 @@ window.addEventListener("load", function () {
 
             this.scaler = .5
 
-            this.game.canvas.addEventListener("mousedown", (e) => {
-                this.moveable = true
-                this.x = e.offsetX
-
-                if(e.offsetY > this.game.canvas.height -200){
-                    this.y = e.offsetY
+            this.handleShipMove = e => {
+                console.log(e)
+                let x, y;
+                if (e.type === 'touchmove') {
+                    x = e.touches[0].clientX - this.game.canvas.getBoundingClientRect().left;
+                    y = e.touches[0].clientY - this.game.canvas.getBoundingClientRect().top;
+                } else {
+                    x = e.offsetX;
+                    y = e.offsetY;
                 }
 
-            })
-            this.game.canvas.addEventListener("mouseup", () => {
-                this.moveable = false
-            })
-            this.game.canvas.addEventListener('mousemove', e => {
-                if (this.moveable) {
-                    this.x = e.offsetX
+                // Update ship position
+                this.x = x;
+                if (y > this.game.canvas.height - 200) {
+                    this.y = y;
+                }
+            }
 
-                    if(e.offsetY > this.game.canvas.height -200){
-                    this.y = e.offsetY
-                }
-                }
-            })
+            // this.game.canvas.addEventListener("mousedown", (e) => {
+            //     this.moveable = true
+            //     this.x = e.offsetX
+
+            //     if (e.offsetY > this.game.canvas.height - 200) {
+            //         this.y = e.offsetY
+            //     }
+
+            // })
+            // this.game.canvas.addEventListener("mouseup", () => {
+            //     this.moveable = false
+            // })
+            this.game.canvas.addEventListener('mousemove', this.handleShipMove)
+            this.game.canvas.addEventListener('touchmove', this.handleShipMove)
+
+
         }
 
         draw(context) {
@@ -120,7 +133,7 @@ window.addEventListener("load", function () {
 
             this.interval = 1000
             this.timer = 0
-            this.direction = Math.random() 
+            this.direction = Math.random()
         }
 
         draw(context) {
@@ -133,7 +146,7 @@ window.addEventListener("load", function () {
                 context.fill()
             }
 
-            context.drawImage(this.image, this.x-this.width * 0.5 , this.y - 10, this.width, this.height )
+            context.drawImage(this.image, this.x - this.width * 0.5, this.y - 10, this.width, this.height)
             context.restore()
         }
 
@@ -144,10 +157,10 @@ window.addEventListener("load", function () {
                 this.active = false
             }
 
-            if(this.timer > this.interval){
+            if (this.timer > this.interval) {
                 this.timer = 0
                 this.direction = -this.direction
-            } else{
+            } else {
                 this.timer += deltaTime
                 this.x += this.direction
             }
