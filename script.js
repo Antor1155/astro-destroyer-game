@@ -53,7 +53,6 @@ window.addEventListener("load", function () {
             this.scaler = .5
 
             this.handleShipMove = e => {
-                console.log(e)
                 let x, y;
                 if (e.type === 'touchmove') {
                     x = e.touches[0].clientX - this.game.canvas.getBoundingClientRect().left;
